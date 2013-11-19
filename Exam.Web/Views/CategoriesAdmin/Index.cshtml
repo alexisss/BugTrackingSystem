@@ -1,0 +1,60 @@
+﻿@model IEnumerable<Exam.Models.Category>
+
+@{
+    ViewBag.Title = "Categories";
+}
+
+<h2>@ViewBag.Title</h2>
+
+<style>
+    /*Batch Edit Mode*/
+    .k-edit-cell input {
+        width: 100%;
+    }
+
+    /*InLine Edit Mode*/
+    .k-grid-edit-row input {
+        width: 100px;
+    }
+</style>
+
+
+@(Html.Kendo()
+        .Grid<Exam.Models.Category>()
+    .Name("categories-grid")
+    .Pageable()
+    .ToolBar(tool =>
+            {
+                tool.Create();
+            })
+    .Sortable()
+    .Editable(edit =>
+            {
+                edit.Mode(GridEditMode.InLine);
+            })
+    .Filterable()
+    .Columns(col =>
+            {
+                col.Bound(m => m.Id);
+                col.Bound(m => m.Name);
+                col.Command(com =>
+                            {
+                                com.Edit();
+                                com.Destroy();
+                            }).Title("Commands");
+            })
+    .DataSource(data =>
+            {
+                data.Ajax()
+                    .ServerOperation(true)
+                    .PageSize(10)
+                    .Model(m =>
+                        {
+                            m.Id("Id");
+                            m.Field(com => com.Id).Editable(false);
+                        })
+                    .Create("CreateCategory", "CategoriesAdmin")
+                    .Read("ReadCategories", "CategoriesAdmin")
+                    .Update("UpdateCategories", "CategoriesAdmin")
+                    .Destroy("DestroyCategories", "CategoriesAdmin");
+            }))

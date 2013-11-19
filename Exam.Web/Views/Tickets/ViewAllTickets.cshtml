@@ -1,0 +1,67 @@
+﻿@model IEnumerable<Exam.Web.Models.TicketViewModel>
+
+@{
+    ViewBag.Title = "ViewAllTickets";
+}
+
+<h2>ViewAllTickets</h2>
+
+<div class="row-fluid">
+    @using (Html.BeginForm("Search", "Tickets", FormMethod.Post))
+    {        
+        <div>
+            Search by category
+        </div>
+        @(Html.Kendo()
+        .DropDownList()
+        .Name("categorysearch")
+        .DataTextField("Name")
+        .DataValueField("Name")
+        .OptionLabel("Select Category")
+        .DataSource(data =>
+        {
+            data.Read(read => read.Action("GetCategories", "Tickets"));
+            data.ServerFiltering(true);
+        }))
+       
+        <div>
+            <input type="submit" value="Search" class="btn" />
+        </div>
+    }
+</div>
+<br />
+
+<div class="row-fluid">
+<div class="span2">
+    <h5> Title </h5>
+</div>
+<div class="span2"><h5>Category </h5></div>
+<div class="span2"><h5> Author</h5></div>
+<div class="span2"><h5> Priority </h5></div>
+<div class="span2"><h5> Commands </h5></div>
+
+    </div>
+@(Html.Kendo()
+         .ListView<Exam.Web.Models.TicketViewModel>()
+        .Name("list-view")
+        .TagName("div")
+        .ClientTemplateId("ticket-template")
+        .Pageable()
+        .DataSource(data =>
+        {
+            data.Read("GetAllTickets", "Tickets");
+            data.ServerOperation(true);
+            data.PageSize(5);
+        }))
+
+<script id="ticket-template" type="text/x-kendo-template">
+    <div class="row-fluid">       
+        <div class="span3">
+            <h5>#: Title #</h5>
+        </div>
+        <div class="span2"><h5>#: Category # </h5></div>
+        <div class="span2"><h5>#: Author #</h5></div>
+        <div class="span2"><h5> #: PriorityAsString #</h5></div>        
+        <div class="span2"><a href="/Tickets/Details/#: Id #" class="btn">More Details</a></div>
+    </div>
+</script>
